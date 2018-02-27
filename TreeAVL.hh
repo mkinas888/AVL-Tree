@@ -6,7 +6,7 @@
 
 class TreeAVL
 {
-  private:
+  public:
     NodeAVL *rootNode;
     NodeAVL rotateRR(NodeAVL *p); // all kinds of rotations needed to rebalance node
     NodeAVL rotateLL(NodeAVL *p); // when new one is added
@@ -17,13 +17,12 @@ class TreeAVL
     void setBf(NodeAVL *p);          // setting balance factor when new node is added to tree
     void restoreBalance(NodeAVL *p); // rebalancing tree when needed using rotations
 
-  public:
     TreeAVL() : rootNode(NULL) {}
     ~TreeAVL()
     {
         delete rootNode;
     }
-    void addNode(float value);
+    void addNode(NodeAVL *parentNode, float value);
     void deleteNode(float value);
 };
 
