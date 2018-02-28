@@ -16,6 +16,7 @@ class TreeAVL
     int treeHeight(NodeAVL *p);
     void setBf(NodeAVL *p);          // setting balance factor when new node is added to tree
     void restoreBalance(NodeAVL *p); // rebalancing tree when needed using rotations
+    void printNode (NodeAVL *p);   // print custome node value 
 
     TreeAVL() : rootNode(NULL) {}
     ~TreeAVL()
