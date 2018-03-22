@@ -24,19 +24,17 @@ int main() {
 
 
 
-    int Tk[32];   // tablica kluczy węzłów
+    float Tk[100000];   // tablica kluczy węzłów
     int i,x,i1,i2;
 
-    srand(time(NULL));        // inicjujemy generator pseudolosowy
 
-
-    for(i = 0; i < 32; i++)   // Tablicę wypełniamy wartościami kluczy
+    for(i = 0; i < 100000; i++)   // Tablicę wypełniamy wartościami kluczy
         Tk[i] = i + 1;
 
-    for(i = 0; i < 300; i++)  // Mieszamy tablicę
+    for(i = 0; i < 300000; i++)  // Mieszamy tablicę
     {
-        i1 = rand() % 32;       // Losujemy 2 indeksy
-        i2 = rand() % 32;
+        i1 = rand() % 100000;       // Losujemy 2 indeksy
+        i2 = rand() % 100000;
 
         x = Tk[i1];             // Wymieniamy Tk[i1] <--> Tk[i2]
         Tk[i1] = Tk[i2];
@@ -44,15 +42,17 @@ int main() {
     }
 
 
-    for(i = 0; i < 32; i++)   // Na podstawie tablicy tworzymy drzewo AVL
+    for(i = 0; i < 100000; i++)   // Na podstawie tablicy tworzymy drzewo AVL
     {
-        cout << Tk[i] << " ";
+        //cout << Tk[i] << " ";
         tree.addNode(tree.rootNode,Tk[i]);
     }
 
     cout << endl << endl;
+    tree.restoreBalance(tree.rootNode);
 
     tree.printBT("","",tree.rootNode); 
+    cout << tree.treeHeight(tree.rootNode) << endl;
 
 
     
