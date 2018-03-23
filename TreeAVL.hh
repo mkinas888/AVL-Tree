@@ -26,8 +26,8 @@ class TreeAVL
     {
         delete rootNode;
     }
-    bool addNode(NodeAVL *parentNode, float value); // adding new node
-    NodeAVL* deleteNode(float value);               // deleting node by value
+    void addNode(NodeAVL *parentNode, float value); // adding new node
+    void deleteNode(float value);               // deleting node by value
     /* !!! Code of this function was taken from site:http://eduinf.waw.pl/inf/alg/001_search/0119.php#P4 */
     void printBT(std::string sp, std::string sn, NodeAVL * v);
 };

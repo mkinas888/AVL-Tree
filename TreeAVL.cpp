@@ -6,156 +6,116 @@ using namespace std;
 int TreeAVL::treeHeight(NodeAVL *p)
 {
     //if null there is no tree
+    
     if (p == NULL)
     {
         return -1;
     }
-    int left = treeHeight(p->leftSibling);
+    int left = treeHeight(p->leftSibling);      // Determine which subtree is higher
     int right = treeHeight(p->rightSibling);
-    if(left > right)
-        return left + 1;
+    if(left > right)                            // Return the higher one
+        return left + 1;                        // Plus one because of rootNode
     else if (right > left)
         return right + 1;
-    return left + 1;
+    return left + 1;                            // If subtrees are equal return left
 }
 
 void TreeAVL::setBf(NodeAVL *p)
-{
+{   
+    // bf is set depending on subtrees height
     p->bf = treeHeight(p->rightSibling) - treeHeight(p->leftSibling);
 }
 
 NodeAVL *TreeAVL::rotateLL(NodeAVL *p)
 {
-    /*
-    NodeAVL* temp;
-	temp = p->rightSibling;
-	p->rightSibling = temp->leftSibling;
-	temp->leftSibling = p;
-	temp->parent = p->parent;
-	p = temp;
-	if (temp->parent == NULL) {
-		rootNode = temp;
-	}*/
     
-    NodeAVL *r = p->rightSibling;
-    r->parent = p->parent;
-    p->rightSibling = r->leftSibling;
-    if (p->rightSibling != NULL)
-    {
-        p->rightSibling->parent = p;
+    NodeAVL* temp;                              // Helper variable
+	temp = p->rightSibling;                     // Put tmp in place of p right child
+    temp->parent = p->parent;                   // Temp's parent is now p's parent
+	p->rightSibling = temp->leftSibling;        // P right child become temp left child
+    if (p->rightSibling != NULL) {              // If p has right child
+        p->rightSibling->parent = p;            // Then it's parent becomes p
     }
-    r->leftSibling = p;
-    p->parent = r;
-    if (r->parent != NULL)
-    {
-        if (r->parent->rightSibling == p)
-        {
-            r->parent->rightSibling = r;
+	temp->leftSibling = p;                      // P becomes temp left child
+	p->parent = temp;                           // Temp become p's parent
+
+    if (temp->parent != NULL) {                 // If temp has parent
+        if (temp->parent->rightSibling == p) {  // If right child of temp's parent is p
+            temp->parent->rightSibling = temp;  // Right child of temp's parent becomes temp
         }
-        else
-        {
-            r->parent->leftSibling = r;
-        }
+        else {                          
+            temp->parent->leftSibling = temp;   // If not, left child of temp's parent becomes temp
+            }
     }
-    setBf(p);
-    //setBf(temp);
-    setBf(r);
-    return r;
+    
+	
+    setBf(p);                                   // Setting balance factor of balanced nodes
+    setBf(temp);
+    return temp;                                
 }
 
 NodeAVL *TreeAVL::rotateRR(NodeAVL *p)
 {
-    /*
-    NodeAVL* temp;
-	temp = p->leftSibling;
-	p->leftSibling = temp->rightSibling;
-	temp->rightSibling = p;
-	temp->parent = p->parent;
-	p = temp;
-	if (temp->parent == NULL) {
-		rootNode = temp;
-	}*/
+    
+    NodeAVL* temp;                              // Helper variable
+	temp = p->leftSibling;                      // Temp becomes p left child
+    temp->parent = p->parent;                   // P's parent becomes temp's parent
+	p->leftSibling = temp->rightSibling;        // P's left child becomes temp's right child
+    if(p->leftSibling != NULL) {                // P's left child exists
+        p->leftSibling->parent = p;             // P's left child's parent become p
+    }   
+	temp->rightSibling = p;                     // P becomes temp's right child
+	p->parent = temp;                           // Temp becomes p's parent
+    if(temp->parent != NULL){                   // If temp has parent
+        if(temp->parent->rightSibling == p) {   // If p is temp's parent's right child
+            temp->parent->rightSibling = temp;  // Temp becomes temp's parent's right child
+        }
+        else {
+            temp->parent->leftSibling = temp;   // Else temp becomes temp's parent's left child
+        }
+    }
 
-    NodeAVL *r = p->leftSibling;
-    r->parent = p->parent;
-    p->leftSibling = r->rightSibling;
-    if (p->leftSibling != NULL)
-    {
-        p->leftSibling->parent = p;
-    }
-    r->rightSibling = p;
-    p->parent = r;
-    if (r->parent != NULL)
-    {
-        if (r->parent->rightSibling == p)
-        {
-            r->parent->rightSibling = r;
-        }
-        else
-        {
-            r->parent->leftSibling = r;
-        }
-    }
-    setBf(r);
-    //setBf(temp);
+    setBf(temp);                                // Setting balance factor of balanced nodes
     setBf(p);
-    return r;
+    return temp;
 }
 
 NodeAVL *TreeAVL::rotateLR(NodeAVL *p)
 {
-    p->leftSibling = rotateLL(p->leftSibling);
-    return rotateRR(p);
+    p->leftSibling = rotateLL(p->leftSibling);  // Firstly rebalance left p's left child
+    return rotateRR(p);                         // Then rebalance right p
 }
 
 NodeAVL *TreeAVL::rotateRL(NodeAVL *p)
 {
-    p->rightSibling = rotateRR(p->rightSibling);
-    return rotateLL(p);
+    p->rightSibling = rotateRR(p->rightSibling); // Firstly rebalance right p's right child
+    return rotateLL(p);                          // Then rotate left p
 }
 
 void TreeAVL::restoreBalance(NodeAVL *p)
 {
-    setBf(p);
-    if (p->bf == -2)
+    setBf(p);                                    // Set p's balance factor
+    if (p->bf == -2)                             // If left subtree is higher
     {
+        // If p's left child's left child subtree is higher rotate right if not rotate left then right
         if (treeHeight(p->leftSibling->leftSibling) >= treeHeight(p->leftSibling->rightSibling))
             p = rotateRR(p);
         else
             p = rotateLR(p);
     }
-    else if (p->bf == 2) {
+    else if (p->bf == 2) {                        // If right subtree is higher
+        // If p's right child's right child subtree is higher rotate left if not rotate right then left
         if (treeHeight(p->rightSibling->rightSibling) >= treeHeight(p->rightSibling->leftSibling))
             p = rotateLL(p);
         else
             p = rotateRL(p);
     }
-    
-    if(p->leftSibling != NULL) {
-        if(p->leftSibling->leftSibling != NULL){
-            restoreBalance(p->leftSibling->leftSibling);
-        }
-        else if(p->leftSibling->rightSibling != NULL) {
-            restoreBalance(p->leftSibling->rightSibling);
-        }
+    if(p->leftSibling != NULL){                    // If p's left child exists rebalance it
+        restoreBalance(p->leftSibling);
     }
-    if(p->rightSibling != NULL) {
-        if(p->rightSibling->leftSibling != NULL){
-            restoreBalance(p->rightSibling->leftSibling);
-        } 
-        else if (p->rightSibling->rightSibling) {
-            restoreBalance(p->rightSibling->rightSibling);
-        }
+    else if (p->rightSibling != NULL){             // If p's right child exists rebalance it
+        restoreBalance(p->rightSibling);
     }
-
-    
-    /*
-    if (p->parent != NULL) {
-        restoreBalance(p->parent);
-    }
-    else {
-        rootNode = p;
-    }*/
 }
 
 void TreeAVL::printNode(NodeAVL *p)
@@ -170,153 +130,103 @@ void TreeAVL::printNode(NodeAVL *p)
     }
 }
 
-bool TreeAVL::addNode(NodeAVL *parent, float value)
+void TreeAVL::addNode(NodeAVL *parent, float value)
 {
-    if (rootNode == NULL) {
-        rootNode = new NodeAVL(NULL, value);
+    bool shouldGoLeft, shouldGo = true;             // Helper variable
+    if (rootNode == NULL) {                         // If tree is empty
+        rootNode = new NodeAVL(NULL, value);        // Create rootNode
     }
     else {
-        NodeAVL
-            *n = rootNode,
+        NodeAVL                                     // Helper nodes
+            *p = rootNode,
             *parent;
  
-        while (true) {
-            if (n->value == value)
-                return false;
+        while (shouldGo) {                          // While shouldGo is true
+            if (p->value == value)                  // If given value exists end loop
+                shouldGo = false;
  
-            parent = n;
+            parent = p;                             // Parent becomes p which means go one level down in tree
  
-            bool goLeft = n->value > value;
-            n = goLeft ? n->leftSibling : n->rightSibling;
+            if(p->value > value){                   // If p's value is higher than value 
+                p = p->leftSibling;                 // P becomes p's left child (go one level down)
+                shouldGoLeft = true;                
+            } else {
+                p = p->rightSibling;                // Else p becomes p's right child
+                shouldGoLeft = false;
+            }
  
-            if (n == NULL) {
-                if (goLeft) {
+            if (p == NULL) {                        // If p is NULL it means that we found a place to insert node
+                if (shouldGoLeft == true) {         // Determine if we should insert node on the left or right side
                     parent->leftSibling = new NodeAVL(parent, value);
                 }
                 else {
                     parent->rightSibling = new NodeAVL(parent, value);
                 }
- 
-                //restoreBalance(parent);
                 break;
             }
         }
     }
- 
-    return true;
-   /* bool tmp;
-    if (rootNode == NULL)
-    {
-        rootNode = new NodeAVL(NULL, value); //if there's no tree create the root
-    }
-    else
-    {
-        NodeAVL *p=rootNode, *parent;
-        while(p->value != value)
-        {               //repeat until newly added node is found
-            parent = p; //go one level down in a tree
-            if (p->value > value)
-            { //if value of new node is lower then value of p go left
-                p->value = tmp;
-                p = p->leftSibling;
-                tmp = true;
-            }
-            else
-            { //else go right
-                p->value = tmp;
-                p = p->rightSibling;
-            }
-            if (p == NULL)
-            { //if parent has no children
-                if (tmp)
-                { //create left or right chlid depending on a value
-                    parent->leftSibling = new NodeAVL(parent, value);
-                }
-                else
-                {
-                    parent->rightSibling = new NodeAVL(parent, value);
-                }
-                restoreBalance(parent); //when node is added check bf and rotate if needed
-                break;
-            }
-        }
-    }*/
 }
 
 NodeAVL *TreeAVL::searchMinimum(NodeAVL *p)
 {
-    if (p == NULL)
+    if (p == NULL)                                  // If tree doesn't exists
     {
-        return NULL;
+        return NULL;                                // return NULL
     }
-    else if (p->leftSibling == NULL)
+    else if (p->leftSibling == NULL)                // If p doesn't have left child it means that p is our minimal value
     {
         return p;
     }
     else {
-        searchMinimum(p->leftSibling);
+        searchMinimum(p->leftSibling);              // If p has left child search further
     }
     return p;
 }
 
-NodeAVL *TreeAVL::deleteNode(float value)
+void TreeAVL::deleteNode(float value)
 {
 
-    NodeAVL *deletingNode,
-        *parentNode = rootNode,
-        *pNode = rootNode,
-        *childNode = rootNode;
+     if (rootNode != NULL){                         // If tree exists
+ 
+        NodeAVL
+            *p       = rootNode,                    // Helper nodes
+            *parent  = rootNode,
+            *deleteNode = NULL,
+            *child   = rootNode;
+    
+        while (child != NULL) {                     // Search node to be deleted as long as child is NULL
+            parent = p;                             // Go one level down
+            p = child;
+            if(value >= p->value){                  // If value to be deleted is greater than value of p
+                child = p->rightSibling;            // Go right
+            } else {
+                child = p->leftSibling;             // Else go left
+            }
+            if (value == p->value)                  // If we find our value in tree
+                deleteNode = p;                     // Found node is node to be deleted
+        }
+    
+        if (deleteNode != NULL) {                   // If deleteNode is found
+            deleteNode->value = p->value;           // Set deleteNode value as p's value
 
-    if (rootNode == NULL)
-    { //there is no tree so nothing can be deleted
-        cout << "There is no tree!" << endl;
-    }
-
-    while (childNode != NULL)
-    {
-        parentNode = pNode;
-        pNode = childNode;
-        if (value < pNode->value)
-        {
-            childNode = pNode->leftSibling;
+            if(p->leftSibling != NULL) {            // If p has left child 
+                child = p->leftSibling;             // Child becomes p's left child
+            } else {
+                child = p->rightSibling;            // Else child becomes p's right child
+            }    
+            if (rootNode->value == value) {         // If value to delete is rootNode value 
+                rootNode = child;                   // Child become new root
+            }
+            else {                                  // Else p doesn't have left child
+                if (parent->leftSibling == p) {     // If parent's left child is p
+                    parent->leftSibling = child;    // Parent's left child becomes child
+                }
+                else {
+                    parent->rightSibling = child;   // Else parent's right child becomes child
+                }
+            }
         }
-        else if (value > pNode->value)
-        {
-            childNode = pNode->rightSibling;
-        }
-        else if (value == pNode->value)
-        {
-            deletingNode = pNode;
-        }
-    }
-
-    if (deletingNode == NULL)
-    {
-        std::cout << "There is no node of value:" << value;
-    }
-    else
-    {
-        if (pNode->leftSibling == NULL && pNode->rightSibling == NULL)
-        {
-            delete pNode;
-        }
-        if (pNode->rightSibling == NULL)
-        {
-            parentNode->leftSibling = pNode->leftSibling;
-            delete pNode;
-        }
-        if (pNode->leftSibling == NULL)
-        {
-            parentNode->rightSibling = pNode->rightSibling;
-            delete pNode;
-        }
-        else
-        {
-            deletingNode = searchMinimum(pNode->rightSibling);
-            pNode->value = deletingNode->value;
-            pNode->rightSibling = deleteNode(pNode->rightSibling->value);
-        }
-        return pNode;
     }
 }
 
@@ -336,8 +246,7 @@ void TreeAVL::printBT(string sp,string sn, NodeAVL * v) {
         s = sp;
         if (sn == cr)
             s[s.length() - 2] = ' ';
-        if(v->rightSibling != NULL)
-            printBT(s + cp, cr, v->rightSibling);
+        printBT(s + cp, cr, v->rightSibling);
 
         s = s.substr(0, sp.length() - 2);
         cout << s << sn << v->value << ":" << v->bf << endl;
@@ -345,7 +254,6 @@ void TreeAVL::printBT(string sp,string sn, NodeAVL * v) {
         s = sp;
         if (sn == cl)
             s[s.length() - 2] = ' ';
-        if(v->leftSibling != NULL)
-            printBT(s + cp, cl, v->leftSibling);
+        printBT(s + cp, cl, v->leftSibling);
         }
 }

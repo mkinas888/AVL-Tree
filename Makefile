@@ -1,7 +1,7 @@
 #
 #  To sa opcje dla kompilacji
 #
-CXXFLAGS=-g -Iinc -Wall -pedantic -std=c++0x
+CXXFLAGS=-g -Iinc -pedantic -std=c++0x
 
 __start__: treeAVL
 	./treeAVL
