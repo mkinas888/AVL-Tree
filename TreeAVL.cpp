@@ -92,7 +92,7 @@ NodeAVL *TreeAVL::rotateRL(NodeAVL *p)
     return rotateLL(p);                          // Then rotate left p
 }
 
-void TreeAVL::restoreBalance(NodeAVL *p)
+void TreeAVL::restoreBalanceFromRoot(NodeAVL *p)
 {
     setBf(p);                                    // Set p's balance factor
     if (p->bf == -2)                             // If left subtree is higher
@@ -111,10 +111,36 @@ void TreeAVL::restoreBalance(NodeAVL *p)
             p = rotateRL(p);
     }
     if(p->leftSibling != NULL){                    // If p's left child exists rebalance it
-        restoreBalance(p->leftSibling);
+        restoreBalanceFromRoot(p->leftSibling);
     }
     else if (p->rightSibling != NULL){             // If p's right child exists rebalance it
-        restoreBalance(p->rightSibling);
+        restoreBalanceFromRoot(p->rightSibling);
+    }
+}
+
+void TreeAVL::restoreBalanceFromLeaf(NodeAVL *p)
+{
+    setBf(p);                                    // Set p's balance factor
+    if (p->bf == -2)                             // If left subtree is higher
+    {
+        // If p's left child's left child subtree is higher rotate right if not rotate left then right
+        if (treeHeight(p->leftSibling->leftSibling) >= treeHeight(p->leftSibling->rightSibling))
+            p = rotateRR(p);
+        else
+            p = rotateLR(p);
+    }
+    else if (p->bf == 2) {                        // If right subtree is higher
+        // If p's right child's right child subtree is higher rotate left if not rotate right then left
+        if (treeHeight(p->rightSibling->rightSibling) >= treeHeight(p->rightSibling->leftSibling))
+            p = rotateLL(p);
+        else
+            p = rotateRL(p);
+    }
+    if (p->parent != NULL) {                       // If exists rebalance tree until reach root
+        restoreBalanceFromLeaf(p->parent);
+    }
+    else {
+        rootNode = p;
     }
 }
 
@@ -162,7 +188,46 @@ void TreeAVL::addNode(NodeAVL *parent, float value)
                 else {
                     parent->rightSibling = new NodeAVL(parent, value);
                 }
-                break;
+                shouldGo = false;                    //After node is added end loop
+            }
+        }
+    }
+}
+
+void TreeAVL::addAndRebalance(NodeAVL *parent, float value)
+{
+    bool shouldGoLeft, shouldGo = true;             // Helper variable
+    if (rootNode == NULL) {                         // If tree is empty
+        rootNode = new NodeAVL(NULL, value);        // Create rootNode
+    }
+    else {
+        NodeAVL                                     // Helper nodes
+            *p = rootNode,
+            *parent;
+ 
+        while (shouldGo) {                          // While shouldGo is true
+            if (p->value == value)                  // If given value exists end loop
+                shouldGo = false;
+ 
+            parent = p;                             // Parent becomes p which means go one level down in tree
+ 
+            if(p->value > value){                   // If p's value is higher than value 
+                p = p->leftSibling;                 // P becomes p's left child (go one level down)
+                shouldGoLeft = true;                
+            } else {
+                p = p->rightSibling;                // Else p becomes p's right child
+                shouldGoLeft = false;
+            }
+ 
+            if (p == NULL) {                        // If p is NULL it means that we found a place to insert node
+                if (shouldGoLeft == true) {         // Determine if we should insert node on the left or right side
+                    parent->leftSibling = new NodeAVL(parent, value);
+                }
+                else {
+                    parent->rightSibling = new NodeAVL(parent, value);
+                }
+                restoreBalanceFromLeaf(parent);
+                shouldGo = false;                    //After node is added end loop
             }
         }
     }
@@ -226,6 +291,7 @@ void TreeAVL::deleteNode(float value)
                     parent->rightSibling = child;   // Else parent's right child becomes child
                 }
             }
+            restoreBalanceFromLeaf(parent);
         }
     }
 }

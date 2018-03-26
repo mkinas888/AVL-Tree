@@ -56,7 +56,7 @@ int main() {
     {
         tree.addNode(tree.rootNode,Tk[i]);
     }
-    tree.restoreBalance(tree.rootNode);
+    tree.restoreBalanceFromRoot(tree.rootNode);
     high_resolution_clock::time_point t2 = high_resolution_clock::now();    // Get time after function
     auto duration = duration_cast<microseconds>( t2 - t1 ).count();         // Time needed to add all nodes
     cout << duration;
@@ -77,7 +77,7 @@ int main() {
         tree.deleteNode(Tk[i]);
     }
 
-    tree.restoreBalance(tree.rootNode);                                
+    tree.restoreBalanceFromRoot(tree.rootNode);                                
 
     high_resolution_clock::time_point t4 = high_resolution_clock::now();     
     auto duration1 = duration_cast<microseconds>( t4 - t3 ).count();    // Time needed to delete nodes
