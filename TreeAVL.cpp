@@ -152,7 +152,7 @@ void TreeAVL::printNode(NodeAVL *p)
     }
     else
     {
-        std::cout << p->value << std::endl;
+        std::cout << p->value << "  ";
     }
 }
 
@@ -233,22 +233,6 @@ void TreeAVL::addAndRebalance(NodeAVL *parent, float value)
     }
 }
 
-NodeAVL *TreeAVL::searchMinimum(NodeAVL *p)
-{
-    if (p == NULL)                                  // If tree doesn't exists
-    {
-        return NULL;                                // return NULL
-    }
-    else if (p->leftSibling == NULL)                // If p doesn't have left child it means that p is our minimal value
-    {
-        return p;
-    }
-    else {
-        searchMinimum(p->leftSibling);              // If p has left child search further
-    }
-    return p;
-}
-
 void TreeAVL::deleteNode(float value)
 {
 
@@ -294,6 +278,33 @@ void TreeAVL::deleteNode(float value)
             restoreBalanceFromLeaf(parent);
         }
     }
+}
+
+void TreeAVL::inorderTravel(NodeAVL *rootNode) {
+    if(rootNode == NULL){                             // Tree doesn't exists
+        return ;
+    }
+    inorderTravel(rootNode->leftSibling);             // First display left subtree then root
+    printNode(rootNode);                             // And right subtree
+    inorderTravel(rootNode->rightSibling);            
+}
+
+void TreeAVL::preorderTravel(NodeAVL *rootNode) {
+    if(rootNode == NULL){                             // Tree doesn't exists
+        return ;
+    }
+    printNode(rootNode);                              // Display root then left subtree
+    preorderTravel (rootNode->leftSibling);           // And right subtree
+    preorderTravel (rootNode->rightSibling);
+}
+
+void TreeAVL::postorderTravel(NodeAVL *rootNode) {
+    if(rootNode == NULL){                             // Tree doesn't exists
+        return ;
+    }
+    postorderTravel(rootNode->leftSibling);           // Display left subtree then right and root
+    postorderTravel(rootNode->rightSibling);
+    printNode(rootNode);
 }
 
 /* !!! Code to print AVL Tree taken from site: http://eduinf.waw.pl/inf/alg/001_search/0119.php#P4  */

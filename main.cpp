@@ -27,19 +27,19 @@ int main() {
 
 
 
-    float Tk[100000];   // tablica kluczy węzłów
+    float Tk[100];   // tablica kluczy węzłów
     int i,x,i1,i2;
 
     srand(time(NULL));        // inicjujemy generator pseudolosowy
 
 
-    for(i = 0; i < 100000; i++)   // Tablicę wypełniamy wartościami kluczy
+    for(i = 0; i < 100; i++)   // Tablicę wypełniamy wartościami kluczy
         Tk[i] = i + 1;
     
-    for(i = 0; i < 200000; i++)  // Mieszamy tablicę
+    for(i = 0; i < 200; i++)  // Mieszamy tablicę
     {
-        i1 = rand() % 100000;       // Losujemy 2 indeksy
-        i2 = rand() % 100000;
+        i1 = rand() % 100;       // Losujemy 2 indeksy
+        i2 = rand() % 100;
 
         x = Tk[i1];             // Wymieniamy Tk[i1] <--> Tk[i2]
         Tk[i1] = Tk[i2];
@@ -52,38 +52,28 @@ int main() {
     high_resolution_clock::time_point t1 = high_resolution_clock::now();    // Get time before function
 
 
-    for(i = 0; i < 100000; i++)                                               // Create AVL tree from array
+    for(i = 0; i < 100; i++)                                               // Create AVL tree from array
     {
-        tree.addNode(tree.rootNode,Tk[i]);
+        tree.addAndRebalance(tree.rootNode,Tk[i]);
     }
-    tree.restoreBalanceFromRoot(tree.rootNode);
+    //tree.restoreBalanceFromRoot(tree.rootNode);
     high_resolution_clock::time_point t2 = high_resolution_clock::now();    // Get time after function
     auto duration = duration_cast<microseconds>( t2 - t1 ).count();         // Time needed to add all nodes
-    cout << duration;
 
 
 
 
     cout << endl << endl;
-    tree.setBf(tree.rootNode);
-    tree.printBT("","",tree.rootNode);                                  // Print tree
-    cout << tree.rootNode->bf << endl;
-    cout << tree.treeHeight(tree.rootNode) << endl;
-
-    high_resolution_clock::time_point t3 = high_resolution_clock::now();
-
-    for(i = 0; i < 99999; i++)                                            // Remove all node except of the last one
-    {
-        tree.deleteNode(Tk[i]);
-    }
-
-    tree.restoreBalanceFromRoot(tree.rootNode);                                
-
-    high_resolution_clock::time_point t4 = high_resolution_clock::now();     
-    auto duration1 = duration_cast<microseconds>( t4 - t3 ).count();    // Time needed to delete nodes
-    cout << duration1;
+    tree.printBT("","",tree.rootNode);    // Print tree
+    cout << duration << endl;
     
-    cout << tree.rootNode->value << endl << endl << endl;
-    tree.printBT("","",tree.rootNode); 
+    cout << endl << endl;          
+    tree.inorderTravel(tree.rootNode);
+    cout << endl << endl;
+    tree.preorderTravel(tree.rootNode);
+    cout << endl << endl;
+    tree.postorderTravel(tree.rootNode);
+    cout << endl << endl <<  duration;
 
+    
 }

@@ -13,14 +13,17 @@ class TreeAVL
     NodeAVL* rotateLL(NodeAVL *p); // when new one is added
     NodeAVL* rotateRL(NodeAVL *p);
     NodeAVL* rotateLR(NodeAVL *p);
-    NodeAVL* searchMinimum(NodeAVL *p); // returns node with the least value
 
 
     int treeHeight(NodeAVL *p);
-    void setBf(NodeAVL *p);                  // setting balance factor when new node is added to tree
-    void restoreBalanceFromRoot(NodeAVL *p); // rebalancing tree when needed using rotations
-    void restoreBalanceFromLeaf(NodeAVL *p); //rebalance after adding 
-    void printNode (NodeAVL *p);             // print custom node value 
+    void setBf(NodeAVL *p);                   // setting balance factor when new node is added to tree
+    void restoreBalanceFromRoot(NodeAVL *p);  // rebalancing tree when needed using rotations
+    void restoreBalanceFromLeaf(NodeAVL *p);  //rebalance after adding 
+    void printNode (NodeAVL *p);              // print custom node value 
+
+    void inorderTravel (NodeAVL *rootNode);   // travel algorithms
+    void preorderTravel (NodeAVL *rootNode);
+    void postorderTravel (NodeAVL *rootNode);
 
     TreeAVL() : rootNode(NULL) {}
     ~TreeAVL()
